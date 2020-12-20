@@ -1,0 +1,12 @@
+[Unit]
+Description=Proxmox WOL Listener
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+User=root
+ExecStart=/usr/bin/proxmoxwol-listener.py
+
+[Install]
+WantedBy=multi-user.target
