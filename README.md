@@ -15,3 +15,7 @@ Proxmox virtual nics don't seem to respond to WOL packets. This service looks ou
 # sudo systemctl daemon-reload
 # sudo systemctl start proxmox-vm.servive
 ```
+
+### What next?
+
+Can improve this quite a bit. Just a quick script written to solve a small problem.
