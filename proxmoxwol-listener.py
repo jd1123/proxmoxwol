@@ -4,8 +4,10 @@
 import socketserver
 import binascii
 import os
+'''
 import daemon
 import daemon.pidfile
+'''
 
 class UDPListener(socketserver.BaseRequestHandler):
     def __init__(self, request, client_address, server):
@@ -74,6 +76,7 @@ def run_server():
 
 
 if __name__ == '__main__':
+    '''
     daem = False
     context = daemon.DaemonContext(
             pidfile = daemon.pidfile.PIDLockFile('/tmp/proxmoxwol-listener.pid'),
@@ -84,3 +87,5 @@ if __name__ == '__main__':
             run_server()
     else:
         run_server()
+    '''
+    run_server()
