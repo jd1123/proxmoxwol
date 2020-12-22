@@ -1,6 +1,8 @@
 # Proxmox WOL server
 
-This is a service written in python to wake VMs using WOL. It runs in systemd. It is known to work on proxmox.
+This is a service written in python to wake VMs using WOL. It runs in systemd. It is known to work on proxmox. It runs as root. If you can think of a better way to do this, please issue a PR. There was a reference to this concept on the proxmox forums, but the actual script was locked behind a regisration wall, so I decided to write it myself in python.
+
+I hope you find this useful.
 
 ### Why?
 
@@ -12,7 +14,6 @@ Proxmox virtual nics don't seem to respond to WOL packets. This service looks ou
 # git clone https://github.com/jd1123/proxmoxwol
 # cd proxmoxwol
 # ./install.sh
-# sudo systemctl daemon-reload
 # sudo systemctl start proxmox-vm.servive
 ```
 

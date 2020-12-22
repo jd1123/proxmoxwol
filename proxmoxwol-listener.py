@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/python3
 # This is the listener
 
 import socketserver
