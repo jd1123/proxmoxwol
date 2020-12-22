@@ -63,7 +63,7 @@ class UDPListener(socketserver.BaseRequestHandler):
                     if line[:4] == 'net0':
                         mac = line.split('=')[1].split(',')[0]
                         self.d[self.convertmac(mac.upper())] = filename.split('.')[0]
-        except:
+        except FileNotFoundError:
             logger.warning('Proxmox configuration files not found at {}'.format(self.configdir))
 
     def getfilenames(self):
@@ -71,7 +71,7 @@ class UDPListener(socketserver.BaseRequestHandler):
             files = os.listdir(self.configdir)
             for f in files:
                 self.parsefiles(f)
-        except:
+        except FileNotFoundError:
             logger.warning('Proxmox configuration files not found at {}'.format(self.configdir))
 
 
