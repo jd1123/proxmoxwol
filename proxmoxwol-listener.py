@@ -30,7 +30,7 @@ class UDPListener(socketserver.BaseRequestHandler):
         if self.iswol(data):
             logger.info('WOL Packet found for mac {}...'.format(packet[1].upper()))
             if packet[1].upper() in self.d.keys():
-                logger.info("...and waking up vm {}".format(d[packet[1].upper()]))
+                logger.info("...and waking up vm {}".format(self.d[packet[1].upper()]))
                 self.wakemachine(self.d[packet[1].upper()])
             else:
                 logger.info('...but it\'s not for this machine')
@@ -48,7 +48,7 @@ class UDPListener(socketserver.BaseRequestHandler):
         return True
 
     def parse_packet(self, dat):
-        return [binascii.hexlify(dat)[:12], binascii.hexlify(dat)[12:24]]
+        return [binascii.hexlify(dat)[:12], binascii.hexlify(dat)[12:24].decode('utf-8')]
 
     def convertmac(self, mac):
         return ''.join(mac.split(':'))
