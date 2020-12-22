@@ -4,10 +4,14 @@
 import socketserver
 import binascii
 import os
-'''
-import daemon
-import daemon.pidfile
-'''
+import logging
+try:
+    from systemd.journal import JournalHandler
+    systemd_present = True
+except ImportError:
+    print('python-systemd does not appear to be present. Please install this for journald logging')
+    systemd_present = False
+
 
 class UDPListener(socketserver.BaseRequestHandler):
     def __init__(self, request, client_address, server):
@@ -20,14 +24,16 @@ class UDPListener(socketserver.BaseRequestHandler):
     def handle(self):
         data = self.request[0].strip()
         socket = self.request[1]
-        print('{} wrote:'.format(self.client_address[0]))
+        logger.info('{} wrote:'.format(self.client_address[0]))
         packet = self.parse_packet(data)
         self.getfilenames()
         if self.iswol(data):
-            print('WOL Packet found')
+            logger.info('WOL Packet found for mac {}...'.format(packet[1].upper()))
             if packet[1].upper() in self.d.keys():
-                print("need to wake up", packet[1].upper())
+                logger.info("...and waking up vm {}".format(d[packet[1].upper()]))
                 self.wakemachine(self.d[packet[1].upper()])
+            else:
+                logger.info('...but it\'s not for this machine')
 
     def iswol(self, dat):
         if len(dat) != 102:
@@ -58,7 +64,7 @@ class UDPListener(socketserver.BaseRequestHandler):
                         mac = line.split('=')[1].split(',')[0]
                         self.d[self.convertmac(mac.upper())] = filename.split('.')[0]
         except:
-            print('Proxmox configuration files not found at', self.configdir)
+            logger.warning('Proxmox configuration files not found at {}'.format(self.configdir))
 
     def getfilenames(self):
         try:
@@ -66,7 +72,7 @@ class UDPListener(socketserver.BaseRequestHandler):
             for f in files:
                 self.parsefiles(f)
         except:
-            print('Proxmox configuration files not found at', self.configdir)
+            logger.warning('Proxmox configuration files not found at {}'.format(self.configdir))
 
 
 def run_server():
@@ -76,16 +82,13 @@ def run_server():
 
 
 if __name__ == '__main__':
-    '''
-    daem = False
-    context = daemon.DaemonContext(
-            pidfile = daemon.pidfile.PIDLockFile('/tmp/proxmoxwol-listener.pid'),
-            )
-
-    if daem:
-        with context:
-            run_server()
-    else:
-        run_server()
-    '''
+    logger = logging.getLogger(__name__)
+    
+    if systemd_present:
+        journald_handler = JournalHandler()
+        journald_handler.setFormatter(logging.Formatter(
+            '[%(levelname)s] %(message)s'))
+        logger.addHandler(journald_handler)
+    
+    logger.setLevel(logging.DEBUG)
     run_server()
